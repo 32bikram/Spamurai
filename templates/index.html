@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CleanMail Pro</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="background"></div>
+
+<div class="card">
+    <h1>CleanMail Pro</h1>
+    <p class="subtitle">Smart Gmail Cleaning — Fast & Secure</p>
+
+    <input type="email" id="email" placeholder="Gmail Address" required>
+    <input type="password" id="password" placeholder="16-Digit App Password" required>
+
+    <div class="options">
+        <label>
+            <input type="checkbox" id="unread">
+            Delete Read Emails
+        </label>
+
+        <label>
+            <input type="checkbox" id="promo">
+            Delete Promotional Emails
+        </label>
+    </div>
+
+    <button onclick="cleanMail()">Clean Now</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+function cleanMail() {
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = "Processing...";
+
+    fetch("/clean", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            unread: document.getElementById("unread").checked,
+            promo: document.getElementById("promo").checked
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            resultDiv.innerHTML =
+                `<div class="success">
+                    ✔ SUCCESS — Deleted ${data.deleted} emails
+                 </div>`;
+        } else {
+            resultDiv.innerHTML =
+                `<div class="error">
+                    ✖ ${data.error}
+                 </div>`;
+        }
+    });
+}
+</script>
+
+</body>
+</html>
